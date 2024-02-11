@@ -1,0 +1,8 @@
+# dependencies
+/node_modules
+
+# files from the exercise
+/provided_testing
+
+# compiled files
+/dist
