@@ -1,4 +1,5 @@
 import {readTripsFromFile} from './parsing';
+import {assignDrivers} from './vehicleRouting';
 
 export async function main() {
     const filename = process.argv[2];
@@ -8,7 +9,7 @@ export async function main() {
 
     const trips = await readTripsFromFile(filename);
 
-    // run the algorithm
+    assignDrivers(trips);
 }
 
 main();
