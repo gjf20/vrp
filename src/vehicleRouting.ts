@@ -77,8 +77,9 @@ function isMergedRouteValid(entry: SavingsEntry): boolean {
     return totalDriveExceeded;
 }
 
-function distance(a: Point, b: Point): number {
-    return (((b.x - a.x) ^ 2) + ((b.y - a.y) ^ 2)) ^ 0.5;
+export function distance(a: Point, b: Point): number {
+    const dist = Math.pow(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2), 0.5);
+    return dist;
 }
 
 function savingsIfMerged(a: Route, b: Route): SavingsMerge {
