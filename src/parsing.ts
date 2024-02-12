@@ -24,7 +24,7 @@ function loadLineIntoArray(trips: Trips, line: string): void {
     const pickup = parsePoint(parts[1]);
     const dropoff = parsePoint(parts[2]);
 
-    trips.push({trip: {id, route: [pickup, dropoff]}});
+    trips.push({trip: {ids: [id], route: [pickup, dropoff]}});
 }
 
 export async function readTripsFromFile(filename: string): Promise<Trips> {
