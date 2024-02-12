@@ -8,4 +8,6 @@ export type Trip = {
     dropoff: Point;
 };
 
+export type Route = Point[];
+
 export type TripsMap = Map<number, Trip>;
