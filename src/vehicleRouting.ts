@@ -26,36 +26,21 @@ export function assignDrivers(trips: Trips) {
 
     // 2. sort the potentials by their savings value (and filter negative combinations)
     potenialSavings.filter((sav) => sav.savings > 0).sort((a, b) => (a.savings > b.savings ? -1 : 1));
-    // console.log(`savings ${potenialSavings.length}`);
 
     // 3. start at the most savings and try to apply the change
     for (let i = 0; i < potenialSavings.length; i++) {
         if (isMergedRouteValid(potenialSavings[i])) {
-            if (isSameTrip(potenialSavings[i].a.trip, potenialSavings[i].b.trip)) {
-                continue;
-            }
-            // console.log(`merging ${potenialSavings[i].a.trip.ids} ${potenialSavings[i].b.trip.ids}`);
-            // console.log(i);
             mergeTrips(potenialSavings[i]);
         }
     }
 
     // 4. reaching the end of the list of savings means we're done.
-    const doneIds: number[] = [];
-
     trips.forEach((trip) => {
-        const tripId = trip.trip.ids[0];
-        // might have some duplicates, just don't output them
-        if (doneIds.includes(tripId)) {
+        if (trip.trip.ids.length === 0) {
             return;
         }
-        doneIds.push(tripId);
-        console.log(trip.trip.ids);
+        console.log(`[${trip.trip.ids.join(',')}]`);
     });
-}
-
-function isSameTrip(a: Trip, b: Trip) {
-    return a === b;
 }
 
 function mergeTrips(entry: SavingsEntry) {
@@ -64,12 +49,12 @@ function mergeTrips(entry: SavingsEntry) {
     parent.trip.route = mergeRoute(entry);
 
     if (entry.parent === 'a') {
-        entry.a.trip.ids.concat(entry.b.trip.ids);
+        entry.a.trip.ids = entry.a.trip.ids.concat(entry.b.trip.ids);
         // change the reference to the trip in the pointer shim.  Entries all point to the same trip shim, so change it once, it changes for the rest
-        entry.b.trip = entry.a.trip;
+        entry.b.trip.ids = [];
     } else {
-        entry.b.trip.ids.concat(entry.a.trip.ids);
-        entry.a.trip = entry.b.trip;
+        entry.b.trip.ids = entry.b.trip.ids.concat(entry.a.trip.ids);
+        entry.a.trip.ids = [];
     }
 }
 
@@ -90,6 +75,10 @@ function measureRoute(route: Route): number {
 }
 
 function isMergedRouteValid(entry: SavingsEntry): boolean {
+    if (entry.a.trip.ids.length === 0 || entry.b.trip.ids.length === 0) {
+        return false;
+    }
+
     const resultRoute = [origin, ...mergeRoute(entry), origin];
     const totalDrive = measureRoute(resultRoute);
     const totalDriveExceeded = totalDrive > maxDriveDistance;
