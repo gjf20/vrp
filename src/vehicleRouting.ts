@@ -8,30 +8,6 @@ const origin: Point = {
     y: 0,
 };
 
-// total number of points >>> 200 loads in problem => very sparse graph
-/**
-   (probably shouldn't use a 2d array for constant time lookup)
- * But we could use a hashmap (radial distance is the hash)
- */
-///
-function distance(a: Point, b: Point): number {
-    return (((b.x - a.x) ^ 2) + ((b.y - a.y) ^ 2)) ^ 0.5;
-}
-
-function savingsIfMerged(a: Route, b: Route): SavingsMerge {
-    // assume that each route is already in order
-    const endA = a[a.length - 1];
-    const endB = b[b.length - 1];
-    const aEndbStart = distance(endA, b[0]);
-    const bEndaStart = distance(endB, a[0]);
-
-    if (aEndbStart < bEndaStart) {
-        return {parent: 'a', savings: distance(endA, origin) + distance(origin, b[0]) - aEndbStart}; // savings formula from Clark and Wright [1]
-    } else {
-        return {parent: 'b', savings: distance(endB, origin) + distance(origin, a[0]) - bEndaStart}; // same as a
-    }
-}
-
 /**
  *
  * Implementation of Clarke and Wright's savings algorithm [1]
@@ -99,4 +75,22 @@ function isMergedRouteValid(entry: SavingsEntry): boolean {
     const totalDrive = measureRoute(resultRoute);
     const totalDriveExceeded = totalDrive > maxDriveDistance;
     return totalDriveExceeded;
+}
+
+function distance(a: Point, b: Point): number {
+    return (((b.x - a.x) ^ 2) + ((b.y - a.y) ^ 2)) ^ 0.5;
+}
+
+function savingsIfMerged(a: Route, b: Route): SavingsMerge {
+    // assume that each route is already in order
+    const endA = a[a.length - 1];
+    const endB = b[b.length - 1];
+    const aEndbStart = distance(endA, b[0]);
+    const bEndaStart = distance(endB, a[0]);
+
+    if (aEndbStart < bEndaStart) {
+        return {parent: 'a', savings: distance(endA, origin) + distance(origin, b[0]) - aEndbStart}; // savings formula from Clark and Wright [1]
+    } else {
+        return {parent: 'b', savings: distance(endB, origin) + distance(origin, a[0]) - bEndaStart}; // same as a
+    }
 }
