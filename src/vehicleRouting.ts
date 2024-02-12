@@ -1,4 +1,4 @@
-import {Point, Route, Trips} from './models';
+import {Point, Route, SavingsEntry, SavingsMerge, Trips} from './models';
 
 const driverFlatRate = 500;
 const maxDriveDistance = 12 * 60; //720
@@ -18,8 +18,6 @@ function distance(a: Point, b: Point): number {
     return (((b.x - a.x) ^ 2) + ((b.y - a.y) ^ 2)) ^ 0.5;
 }
 
-type SavingsMerge = {savings: number; parent: 'a' | 'b'};
-
 function savingsIfMerged(a: Route, b: Route): SavingsMerge {
     // assume that each route is already in order
     const endA = a[a.length - 1];
@@ -34,41 +32,71 @@ function savingsIfMerged(a: Route, b: Route): SavingsMerge {
     }
 }
 
-type SavingsEntry = {
-    savings: number;
-    a: number;
-    b: number;
-    parent: 'a' | 'b';
-};
-
 /**
  *
  * Implementation of Clarke and Wright's savings algorithm [1]
  */
 export function assignDrivers(trips: Trips) {
     const potenialSavings: SavingsEntry[] = [];
+
     // 1. calculate the savings for the combinations of trips
     // just the half triangle
-
-    let i = 0;
-    let j = 0;
-    for (; i < trips.length; i++) {
-        for (; j <= i; j++) {
-            const {savings, parent} = savingsIfMerged(trips[i].route, trips[j].route);
-            potenialSavings.push({savings, a: i, b: j, parent});
+    for (let i = 0; i < trips.length; i++) {
+        for (let j = 0; j <= i; j++) {
+            const {savings, parent} = savingsIfMerged(trips[i].trip.route, trips[j].trip.route);
+            potenialSavings.push({savings, a: trips[i], b: trips[j], parent});
         }
     }
 
     // 2. sort the potentials by their savings value
+    potenialSavings.sort((a, b) => (a.savings > b.savings ? -1 : 1));
 
     // 3. start at the most savings and try to apply the change
-    // - check for the distance constraint, merge them
-    // - what if we merge and the child route appears in the list?
-    //              - if that child b' is another child b'', do nothing, if that child b' is a parent in the entry a'', then the entry's parent a'' becomes the original parent a'
+    for (let i = 0; i < potenialSavings.length; i++) {
+        if (isMergedRouteValid(potenialSavings[i])) {
+            mergeTrips(potenialSavings[i]);
+        }
+    }
 
     // 4. reaching the end of the list of savings means we're done.
 
     trips.forEach((trip, id) => {
         console.log([id]);
     });
+}
+
+function mergeTrips(entry: SavingsEntry) {
+    const parent = entry.parent === 'a' ? entry.a : entry.b;
+
+    parent.trip.route = mergeRoute(entry);
+
+    if (entry.parent === 'a') {
+        // change the reference to the trip in the pointer shim.  Entries all point to the same trip shim, so change it once, it changes for the rest
+        entry.b.trip = entry.a.trip;
+    } else {
+        entry.a.trip = entry.b.trip;
+    }
+}
+
+function mergeRoute(entry: SavingsEntry): Route {
+    // making copies so we don't mutate state until we're sure
+    const parent = entry.parent === 'a' ? [...entry.a.trip.route] : [...entry.b.trip.route];
+
+    parent.push(...entry.a.trip.route);
+    return parent;
+}
+
+function measureRoute(route: Route): number {
+    let sum = 0;
+    for (let i = 0; i < route.length - 1; i++) {
+        sum += distance(route[i], route[i + 1]);
+    }
+    return sum;
+}
+
+function isMergedRouteValid(entry: SavingsEntry): boolean {
+    const resultRoute = [origin, ...mergeRoute(entry), origin];
+    const totalDrive = measureRoute(resultRoute);
+    const totalDriveExceeded = totalDrive > maxDriveDistance;
+    return totalDriveExceeded;
 }

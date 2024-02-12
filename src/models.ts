@@ -9,5 +9,18 @@ export type Trip = {
     id: number;
     route: Route;
 };
+export type TripPointerShim = {
+    trip: Trip;
+};
 
-export type Trips = Trip[];
+export type Trips = TripPointerShim[];
+
+export type SavingsMerge = {
+    savings: number;
+    parent: 'a' | 'b';
+};
+
+export type SavingsEntry = SavingsMerge & {
+    a: TripPointerShim;
+    b: TripPointerShim;
+};
