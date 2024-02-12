@@ -1,4 +1,4 @@
-import {Point, Route, TripsMap} from './models';
+import {Point, Route, Trips} from './models';
 
 const driverFlatRate = 500;
 const maxDriveDistance = 12 * 60; //720
@@ -18,7 +18,9 @@ function distance(a: Point, b: Point): number {
     return (((b.x - a.x) ^ 2) + ((b.y - a.y) ^ 2)) ^ 0.5;
 }
 
-function savingsIfMerged(a: Route, b: Route): {savings: number; parent: 'a' | 'b'} {
+type SavingsMerge = {savings: number; parent: 'a' | 'b'};
+
+function savingsIfMerged(a: Route, b: Route): SavingsMerge {
     // assume that each route is already in order
     const endA = a[a.length - 1];
     const endB = b[b.length - 1];
@@ -32,15 +34,32 @@ function savingsIfMerged(a: Route, b: Route): {savings: number; parent: 'a' | 'b
     }
 }
 
+type SavingsEntry = {
+    savings: number;
+    a: number;
+    b: number;
+    parent: 'a' | 'b';
+};
+
 /**
  *
  * Implementation of Clarke and Wright's savings algorithm [1]
  */
-export function assignDrivers(trips: TripsMap) {
+export function assignDrivers(trips: Trips) {
+    const potenialSavings: SavingsEntry[] = [];
     // 1. calculate the savings for the combinations of trips
     // just the half triangle
 
-    // 2. sort the potentials by their savings
+    let i = 0;
+    let j = 0;
+    for (; i < trips.length; i++) {
+        for (; j <= i; j++) {
+            const {savings, parent} = savingsIfMerged(trips[i].route, trips[j].route);
+            potenialSavings.push({savings, a: i, b: j, parent});
+        }
+    }
+
+    // 2. sort the potentials by their savings value
 
     // 3. start at the most savings and try to apply the change
     // - check for the distance constraint, merge them

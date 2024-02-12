@@ -1,6 +1,6 @@
 import {open} from 'node:fs/promises';
 
-import {Point, Trip, TripsMap} from './models';
+import {Point, Trips} from './models';
 
 function parsePoint(rawPoint: string): Point {
     const sepInd = rawPoint.indexOf(',');
@@ -13,7 +13,7 @@ function parsePoint(rawPoint: string): Point {
     };
 }
 
-function loadLineIntoMap(trips: TripsMap, line: string): void {
+function loadLineIntoArray(trips: Trips, line: string): void {
     const parts = line.split(' ');
 
     const id = parseInt(parts[0], 10);
@@ -24,16 +24,16 @@ function loadLineIntoMap(trips: TripsMap, line: string): void {
     const pickup = parsePoint(parts[1]);
     const dropoff = parsePoint(parts[2]);
 
-    trips.set(id, {pickup, dropoff});
+    trips.push({id, route: [pickup, dropoff]});
 }
 
-export async function readTripsFromFile(filename: string): Promise<TripsMap> {
-    const trips = new Map<number, Trip>();
+export async function readTripsFromFile(filename: string): Promise<Trips> {
+    const trips: Trips = [];
 
     const file = await open(filename);
 
     for await (const line of file.readLines()) {
-        loadLineIntoMap(trips, line);
+        loadLineIntoArray(trips, line);
     }
 
     return trips;

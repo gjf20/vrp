@@ -3,11 +3,11 @@ export type Point = {
     y: number;
 };
 
-export type Trip = {
-    pickup: Point;
-    dropoff: Point;
-};
-
 export type Route = Point[];
 
-export type TripsMap = Map<number, Trip>;
+export type Trip = {
+    id: number;
+    route: Route;
+};
+
+export type Trips = Trip[];
