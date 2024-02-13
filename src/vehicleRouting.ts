@@ -1,6 +1,5 @@
-import {Point, Route, SavingsEntry, SavingsMerge, Trip, Trips} from './models';
+import {Point, Route, SavingsEntry, SavingsMerge, Trips} from './models';
 
-const driverFlatRate = 500;
 const maxDriveDistance = 12 * 60; //720
 
 const origin: Point = {
@@ -60,7 +59,7 @@ function mergeTrips(entry: SavingsEntry) {
 }
 
 function mergeRoute(entry: SavingsEntry): Route {
-    // making copies so we don't mutate state until we're sure
+    // making copies so we don't mutate state until we're sure we want to
 
     if (entry.parent === 'a') {
         return [...entry.a.trip.route, ...entry.b.trip.route];
@@ -79,7 +78,7 @@ function measureRoute(route: Route): number {
         sum += distance(route[i], route[i + 1]);
     }
 
-    // risky, but pop is so much faster than index and we're assuming the route is a copy
+    // risky, but pop is so much faster than index and we're assuming the route is a copy [2]
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     sum += distance(origin, route[0]) + distance(route.pop()!, origin);
     return sum;

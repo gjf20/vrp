@@ -22,4 +22,6 @@ python3 {path_to_evaluateShared.py} --cmd "node --experimental-specifier-resolut
 
 [1]     “IEOR 151 -Lecture 18 Savings Algorithm.” Accessed: Feb. 12, 2024. [Online]. Available: https://aswani.ieor.berkeley.edu/teaching/FA15/151/lecture_notes/ieor151_lec18.pdf
 
+[2]     AMAN, “Get the Last Element of an Array Using JavaScript,” Scaler Topics, Dec. 07, 2022. https://www.scaler.com/topics/javascript-get-last-element-of-array/ (accessed Feb. 13, 2024).
+
 
