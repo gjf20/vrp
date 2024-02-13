@@ -94,7 +94,7 @@ function isMergedRouteValid(entry: SavingsEntry): boolean {
 }
 
 export function distance(a: Point, b: Point): number {
-    return Math.pow(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2), 0.5);
+    return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
 }
 
 function savingsIfMerged(a: Route, b: Route): SavingsMerge {
