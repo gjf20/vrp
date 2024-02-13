@@ -83,7 +83,7 @@ function isMergedRouteValid(entry: SavingsEntry): boolean {
     const totalDrive = measureRoute(resultRoute);
     const totalDriveExceeded = totalDrive > maxDriveDistance;
 
-    return totalDriveExceeded;
+    return !totalDriveExceeded;
 }
 
 export function distance(a: Point, b: Point): number {
