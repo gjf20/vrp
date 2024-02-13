@@ -60,10 +60,13 @@ function mergeTrips(entry: SavingsEntry) {
 }
 
 function mergeRoute(entry: SavingsEntry): Route {
-    const [parent, child] = entry.parent === 'a' ? [entry.a.trip, entry.b.trip] : [entry.b.trip, entry.a.trip];
-
     // making copies so we don't mutate state until we're sure
-    return [...parent.route, ...child.route];
+
+    if (entry.parent === 'a') {
+        return [...entry.a.trip.route, ...entry.b.trip.route];
+    } else {
+        return [...entry.b.trip.route, ...entry.a.trip.route];
+    }
 }
 
 /**
