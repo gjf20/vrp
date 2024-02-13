@@ -24,4 +24,9 @@ python3 {path_to_evaluateShared.py} --cmd "node --experimental-specifier-resolut
 
 [2]     AMAN, “Get the Last Element of an Array Using JavaScript,” Scaler Topics, Dec. 07, 2022. https://www.scaler.com/topics/javascript-get-last-element-of-array/ (accessed Feb. 13, 2024).
 
+# Results on my machine: 
 
+```
+mean cost: 63527.88244727937
+mean run time: 85.59167385101318ms
+``'
