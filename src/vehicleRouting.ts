@@ -71,11 +71,19 @@ function mergeRoute(entry: SavingsEntry): Route {
     return newRoute;
 }
 
+/**
+ * @param route the route not including origin points - this gets mutated for speed
+ * @returns the total distance of the route (including to and from the origin)
+ */
 function measureRoute(route: Route): number {
     let sum = 0;
     for (let i = 0; i < route.length - 1; i++) {
         sum += distance(route[i], route[i + 1]);
     }
+
+    // risky, but pop is so much faster than index and we're assuming the route is a copy
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    sum += distance(origin, route[0]) + distance(route.pop()!, origin);
     return sum;
 }
 
