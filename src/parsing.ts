@@ -16,15 +16,16 @@ function parsePoint(rawPoint: string): Point {
 function loadLineIntoArray(trips: Trips, line: string): void {
     const parts = line.split(' ');
 
-    const id = parseInt(parts[0], 10);
-    if (isNaN(id)) {
+    const loadId = parseInt(parts[0], 10);
+    // this following guard could be an optimization candidate, but I really like having a guard when parsing
+    if (isNaN(loadId)) {
         return;
     }
 
     const pickup = parsePoint(parts[1]);
     const dropoff = parsePoint(parts[2]);
 
-    trips.push({trip: {loads: [id], route: [pickup, dropoff]}});
+    trips.push({trip: {loads: [loadId], route: [pickup, dropoff]}});
 }
 
 export async function readTripsFromFile(filename: string): Promise<Trips> {
