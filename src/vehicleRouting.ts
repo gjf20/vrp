@@ -13,19 +13,24 @@ const origin: Point = {
  * Implementation of Clarke and Wright's savings algorithm [1]
  */
 export function assignDrivers(trips: Trips) {
-    const potenialSavings: SavingsEntry[] = [];
+    const sizeOfSavings = Math.floor(Math.pow(trips.length, 2) / 2) - trips.length - 1; // triangle of savings
+    const potenialSavings: SavingsEntry[] = new Array<SavingsEntry>(sizeOfSavings);
+    let savingsIndex = 0;
 
     // 1. calculate the savings for the combinations of trips
     // just the half triangle
     for (let i = 0; i < trips.length; i++) {
         for (let j = 0; j < i; j++) {
             const {savings, parent} = savingsIfMerged(trips[i].trip.route, trips[j].trip.route);
-            potenialSavings.push({savings, a: trips[i], b: trips[j], parent});
+
+            potenialSavings[savingsIndex++] = {savings, a: trips[i], b: trips[j], parent};
         }
     }
 
     // 2. sort the potentials by their savings value (and filter negative combinations)
-    potenialSavings.filter((sav) => sav.savings > 0).sort((a, b) => (a.savings > b.savings ? -1 : 1));
+    potenialSavings
+        .filter((sav) => sav !== undefined && sav.savings > 0)
+        .sort((a, b) => (a.savings > b.savings ? -1 : 1));
 
     // 3. start at the most savings and try to apply the change
     for (let i = 0; i < potenialSavings.length; i++) {
