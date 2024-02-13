@@ -38,23 +38,23 @@ export function assignDrivers(trips: Trips) {
 
     // 4. reaching the end of the list of savings means we're done.
     trips.forEach((trip) => {
-        if (trip.trip.ids.length === 0) {
+        if (trip.trip.loads.length === 0) {
             return;
         }
-        console.log(`[${trip.trip.ids.join(',')}]`);
+        console.log(`[${trip.trip.loads.join(',')}]`);
     });
 }
 
 function mergeTrips(entry: SavingsEntry) {
     if (entry.parent === 'a') {
         entry.a.trip.route = mergeRoute(entry);
-        entry.a.trip.ids = entry.a.trip.ids.concat(entry.b.trip.ids);
+        entry.a.trip.loads = entry.a.trip.loads.concat(entry.b.trip.loads);
         // change the reference to the trip in the pointer shim.  Entries all point to the same trip shim, so change it once, it changes for the rest
-        entry.b.trip.ids = [];
+        entry.b.trip.loads = [];
     } else {
         entry.b.trip.route = mergeRoute(entry);
-        entry.b.trip.ids = entry.b.trip.ids.concat(entry.a.trip.ids);
-        entry.a.trip.ids = [];
+        entry.b.trip.loads = entry.b.trip.loads.concat(entry.a.trip.loads);
+        entry.a.trip.loads = [];
     }
 }
 
@@ -85,7 +85,7 @@ function measureRoute(route: Route): number {
 }
 
 function isMergedRouteValid(entry: SavingsEntry): boolean {
-    if (entry.a.trip.ids.length === 0 || entry.b.trip.ids.length === 0) {
+    if (entry.a.trip.loads.length === 0 || entry.b.trip.loads.length === 0) {
         return false;
     }
 

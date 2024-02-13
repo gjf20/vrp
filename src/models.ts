@@ -6,7 +6,7 @@ export type Point = {
 export type Route = Point[];
 
 export type Trip = {
-    ids: number[];
+    loads: number[];
     route: Route;
 };
 export type TripPointerShim = {
